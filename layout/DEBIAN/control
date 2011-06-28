@@ -1,0 +1,9 @@
+Package: com.thezimm.WifiIcon
+Depends: mobilesubstrate
+Name: WifiIcon
+Version: 0.1
+Architecture: iphoneos-arm
+Description: Wifi toggler icon style
+Author: Dan Zimmerman <daniel.zimmerman@me.com>
+Section: Tweaks
+dev: thezimm
