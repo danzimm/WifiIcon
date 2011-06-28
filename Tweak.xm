@@ -19,7 +19,7 @@
 -(id)currentRootIconList;
 @end
 
-@interface NSString (GAH)
+@interface NSObject (GAH)
 -(BOOL)containsIcon:(id)idcon;
 @end
 
@@ -66,9 +66,8 @@ static NSString *getsuffix() {
 
 -(void)longPressTimerFired
 {
-	BOOL &jittering = (MSHookIvar<BOOL>(self, "_isJittering"));
 
-	if (jittering > 0) {
+	if (![[%c(SBIconController) sharedInstance] isEditing]) {
 	
 		_held = YES;
 	
@@ -243,13 +242,11 @@ static NSString *getsuffix() {
 %hook SBIconView
 
 -(void)longPressTimerFired
-{	
-	BOOL &jittering = (MSHookIvar<BOOL>(self, "_isJittering"));
-	
+{		
 	SBIcon *&zIcon = (MSHookIvar<SBIcon *>(self, "_icon"));
 	
 	
-	if (jittering > 0 && [zIcon respondsToSelector:@selector(updateIconLabel)]) {
+	if (![[%c(SBIconController) sharedInstance] isEditing] && [zIcon respondsToSelector:@selector(updateIconLabel)]) {
 		
 		_held = YES;
 		
