@@ -1,7 +1,7 @@
 Package: com.thezimm.WifiIcon
 Depends: mobilesubstrate
 Name: WifiIcon
-Version: 0.1.2
+Version: 0.2
 Architecture: iphoneos-arm
 Description: Wifi toggler icon style. Tap to toggle the label from the network name to the ip address and hold the icon to toggle wifi on or off. To move the icon put the homescreen into editing mode with another icon and then move it wherever you want.
 Author: Dan Zimmerman <daniel.zimmerman@me.com>

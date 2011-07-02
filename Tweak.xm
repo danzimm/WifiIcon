@@ -136,40 +136,10 @@ static NSString *getsuffix() {
 {
 	
 	
-	NSString *zString = nil;
+	NSString *zString = [self displayName];
 	
-	UIImage *zImage = nil;
-	
-	if ([[%c(SBWiFiManager) sharedInstance] wiFiEnabled]) {
+	UIImage *zImage = [self generateIconImage:0];
 		
-		switch (_currentMode) {
-				
-				
-			case 0:
-				zString = [NSString stringWithFormat:@"| %@", [[%c(SBWiFiManager) sharedInstance] currentNetworkName] ? : @"None"];
-				break;
-			case 1:
-				zString = [NSString stringWithFormat:@"| %@", GetIPAddress()? : @"None"];
-				break;
-			case 2:
-				zString = [NSString stringWithFormat:@"| %i", [[%c(SBWiFiManager) sharedInstance] signalStrengthBars]];
-				break;
-			default:
-				zString = @"ERR";
-				break;
-				
-		}
-		
-		zImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"/Applications/WIIcon.app/%i%@%@.png", [[%c(SBWiFiManager) sharedInstance] signalStrengthBars], @"_Bar", getsuffix()]];
-		
-	} else {
-		
-		zString = @"O";
-		
-		zImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"/Applications/WIIcon.app/%@%@.png", @"Off", getsuffix()]];
-		
-	}
-	
 	
 		//I'm on 5.0 for testing stuff so get over it, this isnt meant for 5.0 nor do i encourage it so bleh
 	
@@ -198,13 +168,7 @@ static NSString *getsuffix() {
 	[zLabel setText:zString];
 	
 	zImageView.image = zImage;
-	
-
-	[NSObject cancelPreviousPerformRequestsWithTarget:self];
-
-	if (self)
-		[self performSelector:@selector(updateIconLabel) withObject:nil afterDelay:0.5f];
-	
+		
 }
 
 -(id)generateIconImage:(int)image
@@ -246,7 +210,7 @@ static NSString *getsuffix() {
 	SBIcon *&zIcon = (MSHookIvar<SBIcon *>(self, "_icon"));
 	
 	
-	if (![[%c(SBIconController) sharedInstance] isEditing] && [zIcon respondsToSelector:@selector(updateIconLabel)]) {
+	if (![[%c(SBIconController) sharedInstance] isEditing] && [zIcon isKindOfClass:objc_getClass("WIIcon")]) {
 		
 		_held = YES;
 		
@@ -268,7 +232,7 @@ static NSString *getsuffix() {
 
 %hook SBAwayController
 
-- (void)unlockWithSound:(BOOL)sound
+-(void)_unlockWithSound:(BOOL)sound isAutoUnlock:(BOOL)unlock
 {
 	%orig;
 	
@@ -284,16 +248,6 @@ static NSString *getsuffix() {
 
 %hook SBIconController
 
--(void)scrollViewDidScroll:(id)scrollView
-{
-	%orig;
-	
-	[NSObject cancelPreviousPerformRequestsWithTarget:[[%c(SBIconModel) sharedInstance] leafIconForIdentifier:@"com.thezimm.WIIcon"]];
-	
-}
-
-
-
 -(void)scrollViewDidEndDecelerating:(id)scrollView
 {
 	%orig;
@@ -303,6 +257,40 @@ static NSString *getsuffix() {
 		[[[%c(SBIconModel) sharedInstance] leafIconForIdentifier:@"com.thezimm.WIIcon"] updateIconLabel];
 		
 	}
+	
+}
+
+
+%end
+
+%hook SBWiFiManager
+
+-(void)setWiFiEnabled:(BOOL)enabled
+{
+
+	%orig;
+
+	if ([[[[%c(SBIconController) sharedInstance] currentRootIconList] model] containsIcon:[[%c(SBIconModel) sharedInstance] leafIconForIdentifier:@"com.thezimm.WIIcon"]]) {
+	
+		[[[%c(SBIconModel) sharedInstance] leafIconForIdentifier:@"com.thezimm.WIIcon"] updateIconLabel];
+
+	}
+
+
+}
+
+
+-(void)updateSignalStrength
+{
+	
+	%orig;
+	
+	if ([[[[%c(SBIconController) sharedInstance] currentRootIconList] model] containsIcon:[[%c(SBIconModel) sharedInstance] leafIconForIdentifier:@"com.thezimm.WIIcon"]]) {
+		
+		[[[%c(SBIconModel) sharedInstance] leafIconForIdentifier:@"com.thezimm.WIIcon"] updateIconLabel];
+		
+	}
+	
 	
 }
 
